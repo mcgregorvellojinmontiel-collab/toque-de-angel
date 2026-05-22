@@ -217,12 +217,10 @@ def logout():
     return redirect(url_for('admin_login'))
 
 
+with app.app_context():
+
+    db.create_all()
+    
 if __name__ == '__main__':
-
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-    with app.app_context():
-        db.create_all()
-        print("TABLES CREATED")
-
+    
     app.run(debug=True)
