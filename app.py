@@ -29,9 +29,10 @@ DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
 DB_NAME = os.getenv('DB_NAME')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+    'MYSQL_PUBLIC_URL'
 )
+
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
