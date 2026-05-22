@@ -1,0 +1,71 @@
+```html id="jlwm6f"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Product</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+<body>
+
+    <div class="login-container">
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+            class="login-form"
+        >
+
+            <h1>Edit Product</h1>
+
+            <input
+                type="text"
+                name="name"
+                value="{{ product.name }}"
+                required
+            >
+
+            <textarea
+                name="description"
+                rows="5"
+            >{{ product.description }}</textarea>
+
+            <input
+                type="number"
+                name="price"
+                value="{{ product.price }}"
+                required
+            >
+
+            <input
+                type="file"
+                name="image"
+                accept="image/*"
+            >
+
+            <button type="submit">
+                Save Changes
+            </button>
+
+            <a
+                href="{{ url_for('home') }}"
+                class="back-home-btn"
+            >
+                Volver a la tienda
+            </a>
+        </form>
+
+    </div>
+
+</body>
+</html>
+```

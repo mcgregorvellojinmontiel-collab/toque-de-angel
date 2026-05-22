@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Toque de Ángel
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+<body>
+    <header class="main-header">
+
+        <div>
+
+            <h1>
+                Toque de Ángel
+            </h1>
+
+        </div>
+
+        <div class="header-actions">
+
+            <a
+                href="{{ url_for('admin_login') }}"
+                class="login-link"
+            >
+                Panel Admin
+            </a>
+
+            <button
+                class="cart-button"
+                onclick="toggleCart()"
+            >
+                    Ver carrito
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <section class="hero-section">
+
+        <div class="hero-content">
+
+            <h2>
+                Sabores desde el cielo 
+            </h2>
+
+            <p>
+                Disfruta cocadas, tres leches,
+                obleas, arroz con leche,
+                brevas con arequipe y muchos
+                más postres colombianos.
+            </p>
+
+        </div>
+
+    </section>
+
+    <div
+        class="cart-sidebar"
+        id="cart-sidebar"
+    >
+
+        <div class="cart-header">
+
+            <h2>
+                Pedido express
+            </h2>
+
+            <button onclick="toggleCart()">
+                ✖
+            </button>
+
+        </div>
+
+        <div id="cart-items"></div>
+
+        <h3 id="cart-total">
+            Total: $0
+        </h3>
+
+        <button
+            class="whatsapp-btn"
+            onclick="sendWhatsAppOrder()"
+        >
+            Pedir por WhatsApp
+        </button>
+
+        <button
+            class="clear-cart-btn"
+            onclick="clearCart()"
+        >
+            Vaciar carrito
+        </button>
+
+    </div>
+
+    <main class="products-container">
+
+        {% for product in products %}
+
+            <div class="product-card">
+
+                <img
+                    src="{{ product.image }}"
+                    alt="{{ product.name }}"
+                >
+
+                <div class="product-info">
+
+                    <h2>
+                        {{ product.name }}
+                    </h2>
+
+                    <p>
+                        {{ product.description }}
+                    </p>
+
+                    <strong>
+                    ${{ "{:,.0f}".format(product.price) }}
+
+
+                    </strong>
+
+                    <button
+                        onclick='addToCart(
+                            {{ product.id }},
+                            "{{ product.name }}",
+                            {{ product.price }},
+                            "{{ product.image }}"
+                        )'
+                    >
+                        Agregar al carrito
+                    </button>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script
+        src="{{ url_for('static', filename='js/cart.js') }}"
+    ></script>
+
+</body>
+</html>

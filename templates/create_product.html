@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nuevo Producto</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+<body>
+
+    <div class="login-container">
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+            class="login-form"
+        >
+
+            <h1>Nuevo Producto</h1>
+
+            <input
+                type="text"
+                name="name"
+                placeholder="Nombre del producto"
+                required
+            >
+
+            <textarea
+                name="description"
+                placeholder="Descripción"
+                rows="5"
+            ></textarea>
+
+            <input
+                type="number"
+                name="price"
+                placeholder="Precio"
+                required
+            >
+
+            <input
+                type="file"
+                name="image"
+                accept="image/*"
+                required
+            >
+
+            <button type="submit">
+                Crear producto
+            </button>
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="back-home-btn"
+            >
+                Volver al panel
+            </a>
+
+        </form>
+
+    </div>
+
+</body>
+</html>

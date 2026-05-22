@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+<body>
+
+    <header class="dashboard-header">
+
+        <h1>🍰 Panel Administrador</h1>
+
+        <div class="dashboard-actions">
+
+            <a
+                href="{{ url_for('create_product') }}"
+                class="new-product-btn"
+            >
+                + Nuevo Producto
+            </a>
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="logout-btn"
+            >
+                Cerrar sesión
+            </a>
+
+        </div>
+
+    </header>
+
+    <main class="products-container">
+
+        {% for product in products %}
+
+            <div class="product-card">
+
+                <img
+                    src="{{ product.image }}"
+                    alt="{{ product.name }}"
+                >
+
+                <h2>{{ product.name }}</h2>
+
+                <p>{{ product.description }}</p>
+
+                <strong>
+                    ${{ product.price }}
+                </strong>
+
+                <div class="admin-buttons">
+
+                    <a
+                        href="/admin/edit-product/{{ product.id }}"
+                    >
+                        Editar
+                    </a>
+
+                    <a
+                        href="/admin/delete-product/{{ product.id }}"
+                    >
+                        Eliminar
+                    </a>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </main>
+
+</body>
+</html>
