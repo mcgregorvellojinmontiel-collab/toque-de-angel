@@ -1,3 +1,9 @@
+function formatPrice(value) {
+    return Number(value).toLocaleString('es-CO', {
+        maximumFractionDigits: 0
+    });
+}
+
 function addToCart(id, name, price, image) {
 
     let cart = JSON.parse(
@@ -30,7 +36,7 @@ function addToCart(id, name, price, image) {
 
     renderCart();
 
-    alert(name + ' added to cart!');
+    alert(name + ' Se añadio al carrito!');
 }
 
 
@@ -95,7 +101,7 @@ function renderCart() {
                     </p>
 
                     <strong>
-                        $${product.price}
+                        $${formatPrice(product.price * product.quantity)}
                     </strong>
 
                 </div>
@@ -105,7 +111,7 @@ function renderCart() {
         `;
     });
 
-    cartTotal.innerText = `Total: $${total}`;
+    cartTotal.innerText = `Total: $${formatPrice(total)}`;
 }
 
 
@@ -114,26 +120,53 @@ function sendWhatsAppOrder() {
     const cart = getCart();
 
     if (cart.length === 0) {
-
-        alert('Cart is empty');
-
+        alert('El carrito está vacío. Agrega productos antes de hacer el pedido.');
         return;
     }
 
-    let message = 'Buenas, quiero hacer un pedido de:%0A%0A';
+    const customerName = prompt('Escribe tu nombre:');
+
+    if (!customerName || customerName.trim() === '') {
+        alert('Debes escribir tu nombre para continuar.');
+        return;
+    }
+
+    const customerAddress = prompt('Escribe tu dirección de entrega:');
+
+    if (!customerAddress || customerAddress.trim() === '') {
+        alert('Debes escribir la dirección de entrega.');
+        return;
+    }
+
+    const notes = prompt('Observaciones del pedido, ejemplo: sin azúcar, para recoger, etc. Si no tienes, puedes dejarlo vacío.');
 
     let total = 0;
 
+    let message = 'Hola, quiero realizar el siguiente pedido:%0A%0A';
+
+    message += 'Datos del cliente:%0A';
+    message += `Nombre: ${customerName}%0A`;
+    message += `Dirección: ${customerAddress}%0A`;
+
+    if (notes && notes.trim() !== '') {
+        message += `Observaciones: ${notes}%0A`;
+    }
+
+    message += '%0AProductos:%0A';
+
     cart.forEach(product => {
 
-        total += product.price * product.quantity;
+        const subtotal = product.price * product.quantity;
 
-        message += `${product.name} x${product.quantity} - $${product.price * product.quantity}%0A`;
+        total += subtotal;
+
+        message += `- ${product.name} x${product.quantity} - $${formatPrice(subtotal)}%0A`;
     });
 
-    message += `%0A Total: $${total}`;
+    message += `%0ATotal del pedido: $${formatPrice(total)}%0A%0A`;
+    message += 'Quedo atento a la confirmación.';
 
-    const phone = '3053521301';
+    const phone = '573053521301';
 
     window.open(
         `https://wa.me/${phone}?text=${message}`,

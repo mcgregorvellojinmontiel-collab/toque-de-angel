@@ -27,10 +27,18 @@
 
             <h1>Edit Product</h1>
 
+            {% if error %}
+                <div class="error-message">
+                    {{ error }}
+                </div>
+            {% endif %}
+
             <input
                 type="text"
                 name="name"
                 value="{{ product.name }}"
+                minlength="3"
+                maxlength="80"
                 required
             >
 
@@ -43,6 +51,9 @@
                 type="number"
                 name="price"
                 value="{{ product.price }}"
+                min="1"
+                max="99999999"
+                step="1"
                 required
             >
 
@@ -57,10 +68,10 @@
             </button>
 
             <a
-                href="{{ url_for('home') }}"
-                class="back-home-btn"
+                href="{{ url_for('dashboard') }}"
+                class="back-btn"
             >
-                Volver a la tienda
+                Volver al panel
             </a>
         </form>
 

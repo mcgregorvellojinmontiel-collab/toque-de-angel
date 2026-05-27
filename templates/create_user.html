@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrador</title>
+
+    <title>Crear Usuario</title>
 
     <link
         rel="stylesheet"
@@ -15,6 +18,7 @@
     type="image/png"
     href="{{ url_for('static', filename='css/icono.png') }}"
     >
+
 </head>
 <body>
 
@@ -22,10 +26,10 @@
 
         <form method="POST" class="login-form">
 
-            <h1>Inicio de sesión</h1>
+            <h1>Crear usuario</h1>
 
             <p class="login-subtitle">
-                Ingresa tus credenciales para acceder al sistema.
+                Registra un nuevo usuario administrador para el sistema.
             </p>
 
             {% if error %}
@@ -35,36 +39,40 @@
             {% endif %}
 
             <label>
-                Nombre de usuario <span class="required">*</span>
+                Nombre de usuario
             </label>
 
             <input
                 type="text"
                 name="username"
-                placeholder="Usuario"
+                placeholder="Ejemplo: admin2"
+                minlength="3"
+                maxlength="30"
                 required
             >
 
             <label>
-                Contraseña <span class="required">*</span>
+                Contraseña
             </label>
 
             <input
                 type="password"
                 name="password"
-                placeholder="Contraseña"
+                placeholder="Mínimo 6 caracteres"
+                minlength="6"
+                maxlength="30"
                 required
             >
 
             <button type="submit">
-                Ingresar
+                Crear usuario
             </button>
 
             <a
-                href="{{ url_for('home') }}"
+                href="{{ url_for('users') }}"
                 class="back-btn"
             >
-                Volver a la tienda
+                Volver a usuarios
             </a>
 
         </form>

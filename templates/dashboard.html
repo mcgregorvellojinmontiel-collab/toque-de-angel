@@ -13,12 +13,18 @@
         href="{{ url_for('static', filename='css/style.css') }}"
     >
 
+    <link
+    rel="icon"
+    type="image/png"
+    href="{{ url_for('static', filename='css/icono.png') }}"
+    >
+
 </head>
 <body>
 
     <header class="dashboard-header">
 
-        <h1>🍰 Panel Administrador</h1>
+        <h1>Panel Administrador</h1>
 
         <div class="dashboard-actions">
 
@@ -27,6 +33,13 @@
                 class="new-product-btn"
             >
                 + Nuevo Producto
+            </a>
+
+            <a
+                href="{{ url_for('users') }}"
+                class="home-btn"
+            >
+                Usuarios
             </a>
 
             <a
@@ -53,10 +66,12 @@
 
                 <h2>{{ product.name }}</h2>
 
-                <p>{{ product.description }}</p>
+                <p class="product-description">
+                    {{ product.description }}
+                </p>
 
                 <strong>
-                    ${{ product.price }}
+                    ${{ "{:,.0f}".format(product.price) }}
                 </strong>
 
                 <div class="admin-buttons">
@@ -69,10 +84,10 @@
 
                     <a
                         href="/admin/delete-product/{{ product.id }}"
+                        onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?')"
                     >
                         Eliminar
                     </a>
-
                 </div>
 
             </div>

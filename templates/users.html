@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <link
+    rel="icon"
+    type="image/png"
+    href="{{ url_for('static', filename='css/icono.png') }}"
+    >
+</head>
+<body>
+
+    <header class="dashboard-header">
+
+        <h1>Usuarios</h1>
+
+        <div class="dashboard-actions">
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="home-btn"
+            >
+                Volver al panel
+            </a>
+
+            <a
+                href="{{ url_for('create_user') }}"
+                class="new-product-btn"
+            >
+                + Nuevo usuario
+            </a>
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="logout-btn"
+            >
+                Cerrar sesión
+            </a>
+
+        </div>
+
+    </header>
+
+    <main class="users-container">
+
+        <table class="users-table">
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for user in users %}
+
+                    <tr>
+                        <td>{{ user.id }}</td>
+
+                        <td>{{ user.username }}</td>
+
+                        <td>
+                            {% if user.username != 'admin' %}
+                                <a
+                                    href="/admin/delete-user/{{ user.id }}"
+                                    class="delete-user-btn"
+                                    onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?')"
+                                >
+                                    Eliminar
+                                </a>
+                            {% else %}
+                                <span class="protected-user">
+                                    Protegido
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </main>
+
+</body>
+</html>

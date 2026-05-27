@@ -1,17 +1,7 @@
-from flask import (
-    Flask,
-    render_template,
-    request,
-    redirect,
-    url_for,
-    session
-)
-
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template, request, redirect, url_for, session
 from dotenv import load_dotenv
-
 from werkzeug.utils import secure_filename
-
+from models import db, Product, User
 import os
 
 load_dotenv()
@@ -21,39 +11,12 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'static/uploads'
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
-DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_HOST = os.getenv('DB_HOST')
-DB_NAME = os.getenv('DB_NAME')
-
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    'MYSQL_PUBLIC_URL'
-)
-
-
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('MYSQL_PUBLIC_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
-
-
-class Product(db.Model):
-
-    __tablename__ = 'products'
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    name = db.Column(db.String(100), nullable=False)
-
-    description = db.Column(db.Text)
-
-    price = db.Column(db.Float, nullable=False)
-
-    image = db.Column(db.String(255))
-
-    active = db.Column(db.Boolean, default=True)
+db.init_app(app)
 
 
 @app.route('/')
@@ -70,82 +33,32 @@ def home():
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
 
+    error = None
+
     if request.method == 'POST':
 
         username = request.form.get('username')
-
         password = request.form.get('password')
 
-        admin_user = os.getenv('ADMIN_USER')
+        user = User.query.filter_by(
+            username=username,
+            active=True
+        ).first()
 
-        admin_password = os.getenv('ADMIN_PASSWORD')
-
-        if username == admin_user and password == admin_password:
+        if user and user.check_password(password):
 
             session['admin'] = True
+            session['user_id'] = user.id
+            session['username'] = user.username
 
             return redirect(url_for('dashboard'))
 
-    return render_template('login.html')
-
-@app.route('/admin/delete-product/<int:id>')
-def delete_product(id):
-
-    if not session.get('admin'):
-
-        return redirect(url_for('admin_login'))
-
-    product = Product.query.get_or_404(id)
-
-    db.session.delete(product)
-
-    db.session.commit()
-
-    return redirect(url_for('dashboard'))
-
-
-
-@app.route('/admin/edit-product/<int:id>', methods=['GET', 'POST'])
-def edit_product(id):
-
-    if not session.get('admin'):
-
-        return redirect(url_for('admin_login'))
-
-    product = Product.query.get_or_404(id)
-
-    if request.method == 'POST':
-
-        product.name = request.form.get('name')
-
-        product.description = request.form.get('description')
-
-        product.price = request.form.get('price')
-
-        image = request.files.get('image')
-
-        if image and image.filename != '':
-
-            filename = secure_filename(image.filename)
-
-            image.save(
-                os.path.join(
-                    app.config['UPLOAD_FOLDER'],
-                    filename
-                )
-            )
-
-            product.image = f'/static/uploads/{filename}'
-
-        db.session.commit()
-
-        return redirect(url_for('dashboard'))
+        error = 'Usuario o contraseña incorrectos'
 
     return render_template(
-        'edit_product.html',
-        product=product
+        'login.html',
+        error=error
     )
-
 
 
 @app.route('/admin/dashboard')
@@ -170,17 +83,132 @@ def create_product():
 
         return redirect(url_for('admin_login'))
 
+    error = None
+
     if request.method == 'POST':
 
         name = request.form.get('name')
-
         description = request.form.get('description')
-
         price = request.form.get('price')
-
         image = request.files.get('image')
 
-        filename = ''
+        if not name or len(name) < 3 or len(name) > 80:
+
+            error = 'El nombre debe tener entre 3 y 80 caracteres'
+
+            return render_template(
+                'create_product.html',
+                error=error
+            )
+        try:
+            price = float(price)
+
+            if price <= 0:
+                error = 'El precio debe ser mayor a 0'
+                return render_template('create_product.html', error=error)
+
+            if price > 99999999:
+                error = 'El precio no puede ser mayor a 99.999.999'
+                return render_template('create_product.html', error=error)
+
+        except:
+            error = 'Precio inválido'
+            return render_template('create_product.html', error=error)
+
+        if not image or image.filename == '':
+
+            error = 'Debes subir una imagen'
+
+            return render_template(
+                'create_product.html',
+                error=error
+            )
+
+        allowed_extensions = (
+            '.png',
+            '.jpg',
+            '.jpeg',
+            '.webp'
+        )
+
+        if not image.filename.lower().endswith(allowed_extensions):
+
+            error = 'Formato de imagen no permitido'
+
+            return render_template(
+                'create_product.html',
+                error=error
+            )
+
+        filename = secure_filename(image.filename)
+
+        image.save(
+            os.path.join(
+                app.config['UPLOAD_FOLDER'],
+                filename
+            )
+        )
+
+        product = Product(
+            name=name,
+            description=description,
+            price=price,
+            image=f'/static/uploads/{filename}'
+        )
+
+        db.session.add(product)
+        db.session.commit()
+
+        return redirect(url_for('dashboard'))
+
+    return render_template(
+        'create_product.html',
+        error=error
+    )
+
+
+@app.route('/admin/edit-product/<int:id>', methods=['GET', 'POST'])
+def edit_product(id):
+
+    if not session.get('admin'):
+
+        return redirect(url_for('admin_login'))
+
+    product = Product.query.get_or_404(id)
+
+    if request.method == 'POST':
+
+        product.name = request.form.get('name')
+        product.description = request.form.get('description')
+        price = request.form.get('price')
+
+        try:
+            price = float(price)
+
+            if price <= 0:
+                return render_template(
+                    'edit_product.html',
+                    product=product,
+                    error='El precio debe ser mayor a 0'
+                )
+
+            if price > 99999999:
+                return render_template(
+                    'edit_product.html',
+                    product=product,
+                    error='El precio no puede ser mayor a 99.999.999'
+                )
+
+        except:
+            return render_template(
+                'edit_product.html',
+                product=product,
+                error='Precio inválido'
+            )
+
+        product.price = price
+
+        image = request.files.get('image')
 
         if image and image.filename != '':
 
@@ -193,20 +221,126 @@ def create_product():
                 )
             )
 
-        product = Product(
-            name=name,
-            description=description,
-            price=price,
-            image=f'/static/uploads/{filename}'
-        )
-
-        db.session.add(product)
+            product.image = f'/static/uploads/{filename}'
 
         db.session.commit()
 
         return redirect(url_for('dashboard'))
 
-    return render_template('create_product.html')
+    return render_template(
+        'edit_product.html',
+        product=product,
+        error=error
+    )
+
+
+@app.route('/admin/delete-product/<int:id>')
+def delete_product(id):
+
+    if not session.get('admin'):
+
+        return redirect(url_for('admin_login'))
+
+    product = Product.query.get_or_404(id)
+
+    db.session.delete(product)
+    db.session.commit()
+
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/admin/users')
+def users():
+
+    if not session.get('admin'):
+
+        return redirect(url_for('admin_login'))
+
+    users = User.query.all()
+
+    return render_template(
+        'users.html',
+        users=users
+    )
+
+
+@app.route('/admin/create-user', methods=['GET', 'POST'])
+def create_user():
+
+    if not session.get('admin'):
+
+        return redirect(url_for('admin_login'))
+
+    error = None
+
+    if request.method == 'POST':
+
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        existing_user = User.query.filter_by(username=username).first()
+
+        if existing_user:
+
+            error = 'Ese usuario ya existe'
+
+            return render_template(
+                'create_user.html',
+                error=error
+            )
+
+        if not username or len(username) < 3:
+
+            error = 'El usuario debe tener mínimo 3 caracteres'
+
+            return render_template(
+                'create_user.html',
+                error=error
+            )
+
+        if not password or len(password) < 6:
+
+            error = 'La contraseña debe tener mínimo 6 caracteres'
+
+            return render_template(
+                'create_user.html',
+                error=error
+            )
+
+        user = User(
+            username=username,
+            role='admin',
+            active=True
+        )
+
+        user.set_password(password)
+
+        db.session.add(user)
+        db.session.commit()
+
+        return redirect(url_for('users'))
+
+    return render_template(
+        'create_user.html',
+        error=error
+    )
+
+
+@app.route('/admin/delete-user/<int:id>')
+def delete_user(id):
+
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+
+    user = User.query.get_or_404(id)
+
+    if user.username == 'admin':
+        return redirect(url_for('users'))
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return redirect(url_for('users'))
 
 
 @app.route('/admin/logout')
@@ -214,13 +348,31 @@ def logout():
 
     session.clear()
 
-    return redirect(url_for('admin_login'))
+    return redirect(url_for('home'))
 
 
 with app.app_context():
 
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
     db.create_all()
-    
+
+    admin = User.query.filter_by(username='admin').first()
+
+    if not admin:
+
+        admin = User(
+            username='admin',
+            role='admin',
+            active=True
+        )
+
+        admin.set_password('123456')
+
+        db.session.add(admin)
+        db.session.commit()
+
+
 if __name__ == '__main__':
-    
+
     app.run(debug=True)
