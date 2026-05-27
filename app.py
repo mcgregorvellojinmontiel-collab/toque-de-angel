@@ -334,6 +334,11 @@ def delete_user(id):
     if not session.get('admin'):
         return redirect(url_for('admin_login'))
 
+    current_user = User.query.get(session.get('user_id'))
+
+    if not current_user or current_user.username != 'admin':
+        return redirect(url_for('users'))
+
     user = User.query.get_or_404(id)
 
     if user.username == 'admin':
