@@ -78,6 +78,14 @@
 
     </section>
 
+    <section class="search-section">
+
+    <input
+        type="text"
+        id="productSearch"
+        placeholder="Buscar producto..."
+        onkeyup="searchProducts()"
+    >
 
     <div
         class="cart-sidebar"
@@ -128,7 +136,7 @@
 
         {% for product in products %}
 
-            <div class="product-card">
+            <div class="product-card searchable-product">
 
                 <img
                     src="{{ product.image }}"
