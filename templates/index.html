@@ -59,148 +59,170 @@
 
     </header>
 
+    <main>
 
-    <section class="hero-section">
+        <section class="hero-section">
 
-        <div class="hero-content">
+            <div class="hero-content">
 
-            <h2>
-                Sabores desde el cielo
-            </h2>
+                <h2>
+                    Sabores desde el cielo
+                </h2>
 
-            <p>
-                Disfruta cocadas, tres leches, obleas,
-                arroz con leche, brevas con arequipe
-                y muchos más postres colombianos.
-            </p>
+                <p>
+                    Disfruta cocadas, tres leches, obleas,
+                    arroz con leche, brevas con arequipe
+                    y muchos más postres colombianos.
+                </p>
 
-        </div>
+            </div>
 
-    </section>
+        </section>
 
-    <section class="search-section">
+        <section class="search-section">
 
-    <input
-        type="text"
-        id="productSearch"
-        placeholder="Buscar producto..."
-        onkeyup="searchProducts()"
-    >
+            <input
+                type="text"
+                id="productSearch"
+                placeholder="Buscar producto..."
+                onkeyup="searchProducts()"
+            >
 
-    <div
-        class="cart-sidebar"
-        id="cart-sidebar"
-    >
+        </section>
 
-        <div class="cart-header">
+        <div
+            class="cart-sidebar"
+            id="cart-sidebar"
+        >
 
-            <h2>
-                Pedido express
-            </h2>
+            <div class="cart-header">
+
+                <h2>
+                    Pedido express
+                </h2>
+
+                <button
+                    type="button"
+                    onclick="toggleCart()"
+                >
+                    X
+                </button>
+
+            </div>
+
+            <div id="cart-items"></div>
+
+            <h3 id="cart-total">
+                Total: $0
+            </h3>
 
             <button
                 type="button"
-                onclick="toggleCart()"
+                class="whatsapp-btn"
+                onclick="sendWhatsAppOrder()"
             >
-                X
+                Pedir por WhatsApp
+            </button>
+
+            <button
+                type="button"
+                class="clear-cart-btn"
+                onclick="clearCart()"
+            >
+                Vaciar carrito
             </button>
 
         </div>
 
-        <div id="cart-items"></div>
+        <main class="products-container">
 
-        <h3 id="cart-total">
-            Total: $0
-        </h3>
+            {% for product in products %}
 
-        <button
-            type="button"
-            class="whatsapp-btn"
-            onclick="sendWhatsAppOrder()"
-        >
-            Pedir por WhatsApp
-        </button>
+                <div class="product-card searchable-product">
 
-        <button
-            type="button"
-            class="clear-cart-btn"
-            onclick="clearCart()"
-        >
-            Vaciar carrito
-        </button>
-
-    </div>
-
-
-    <main class="products-container">
-
-        {% for product in products %}
-
-            <div class="product-card searchable-product">
-
-                <img
-                    src="{{ product.image }}"
-                    alt="{{ product.name }}"
-                >
-
-                <div class="product-info">
-
-                    <h2>
-                        {{ product.name }}
-                    </h2>
-
-                    <p class="product-description">
-                        {{ product.description }}
-                    </p>
-
-                    <strong>
-                        ${{ "{:,.0f}".format(product.price) }}
-                    </strong>
-
-                    <button
-                        type="button"
-                        onclick='addToCart(
-                            {{ product.id }},
-                            "{{ product.name }}",
-                            {{ product.price }},
-                            "{{ product.image }}"
-                        )'
+                    <img
+                        src="{{ product.image }}"
+                        alt="{{ product.name }}"
                     >
-                        Agregar al carrito
-                    </button>
+
+                    <div class="product-info">
+
+                        <h2>
+                            {{ product.name }}
+                        </h2>
+
+                        <p class="product-description">
+                            {{ product.description }}
+                        </p>
+
+                        <strong>
+                            ${{ "{:,.0f}".format(product.price) }}
+                        </strong>
+
+                        <button
+                            type="button"
+                            onclick='addToCart(
+                                {{ product.id }},
+                                "{{ product.name }}",
+                                {{ product.price }},
+                                "{{ product.image }}"
+                            )'
+                        >
+                            Agregar al carrito
+                        </button>
+
+                    </div>
 
                 </div>
 
+            {% endfor %}
+
+        </main>
+
+        <section class="info-section">
+
+            <div class="info-card">
+
+                <h3>
+                    Pedidos por WhatsApp
+                </h3>
+
+                <p>
+                    Selecciona tus postres favoritos y finaliza
+                    el pedido directamente por WhatsApp.
+                </p>
+
             </div>
 
-        {% endfor %}
+            <div class="info-card">
+
+                <h3>
+                    Productos artesanales
+                </h3>
+
+                <p>
+                    Cada postre es preparado con dedicación,
+                    frescura y calidad.
+                </p>
+
+            </div>
+
+            <div class="info-card">
+
+                <h3>
+                    Atención en Montería
+                </h3>
+
+                <p>
+                    Recibimos pedidos para entrega o recogida
+                    según disponibilidad.
+                </p>
+
+            </div>
+
+        </section>
 
     </main>
-
-    <section class="info-section">
-
-        <div class="info-card">
-            <h3>Pedidos por WhatsApp</h3>
-            <p>
-                Selecciona tus postres favoritos y finaliza el pedido directamente por WhatsApp.
-            </p>
-        </div>
-
-        <div class="info-card">
-            <h3>Productos artesanales</h3>
-            <p>
-                Cada postre es preparado con dedicación, frescura y calidad.
-            </p>
-        </div>
-
-        <div class="info-card">
-            <h3>Atención en Montería</h3>
-            <p>
-                Recibimos pedidos para entrega o recogida según disponibilidad.
-            </p>
-        </div>
-
-    </section>
 
     <footer class="main-footer">
 
@@ -243,18 +265,23 @@
             </div>
 
             <div>
-            <a
-                href="{{ url_for('admin_login') }}"
-                class="footer-admin-link"
-            >
-                Acceso admin
-            </a>
 
-</div>
+                <h4>
+                    Administración
+                </h4>
+
+                <a
+                    href="{{ url_for('admin_login') }}"
+                    class="footer-admin-link"
+                >
+                    Acceso admin
+                </a>
+
+            </div>
+
         </div>
 
     </footer>
-
 
     <script
         src="{{ url_for('static', filename='js/cart.js') }}"
