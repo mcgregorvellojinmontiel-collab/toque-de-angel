@@ -349,7 +349,6 @@ def delete_user(id):
 
     return redirect(url_for('users'))
 
-
 @app.route('/admin/logout')
 def logout():
 
