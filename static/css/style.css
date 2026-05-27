@@ -640,3 +640,25 @@ input[type="file"]::file-selector-button{
         justify-content:center;
     }
 }
+
+.search-section{
+    width:95%;
+    margin:25px auto 10px;
+}
+
+.search-section input{
+    width:100%;
+    max-width:450px;
+    padding:14px 18px;
+    border-radius:14px;
+    border:1px solid #f3b6c8;
+    background:white;
+    font-size:16px;
+    outline:none;
+    box-shadow:0 3px 10px rgba(0,0,0,0.06);
+}
+
+.search-section input:focus{
+    border-color:#ff5d8f;
+    box-shadow:0 0 0 3px rgba(255,93,143,0.18);
+}

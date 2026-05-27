@@ -174,5 +174,29 @@ function sendWhatsAppOrder() {
     );
 }
 
+function searchProducts() {
+
+    const input = document.getElementById('productSearch');
+
+    if (!input) {
+        return;
+    }
+
+    const searchText = input.value.toLowerCase();
+
+    const products = document.querySelectorAll('.searchable-product');
+
+    products.forEach(product => {
+
+        const productName = product.querySelector('h2').innerText.toLowerCase();
+
+        if (productName.includes(searchText)) {
+            product.style.display = 'flex';
+        } else {
+            product.style.display = 'none';
+        }
+    });
+}
+
 
 renderCart();
