@@ -30,7 +30,7 @@
             class="login-form"
         >
 
-            <h1>Edit Product</h1>
+            <h1>Editar Producto</h1>
 
             {% if error %}
                 <div class="error-message">
@@ -55,10 +55,11 @@
             <input
                 type="number"
                 name="price"
-                value="{{ product.price }}"
+                value="{{ product.price|int }}"
                 min="1"
                 max="99999999"
                 step="1"
+                onwheel="this.blur()"
                 required
             >
 

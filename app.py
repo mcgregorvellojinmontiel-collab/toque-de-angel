@@ -171,46 +171,48 @@ def create_product():
 def edit_product(id):
 
     if not session.get('admin'):
-
         return redirect(url_for('admin_login'))
 
     product = Product.query.get_or_404(id)
+    error = None
 
     if request.method == 'POST':
 
-        product.name = request.form.get('name')
-        product.description = request.form.get('description')
+        name = request.form.get('name')
+        description = request.form.get('description')
         price = request.form.get('price')
-
-        try:
-            price = float(price)
-
-            if price <= 0:
-                return render_template(
-                    'edit_product.html',
-                    product=product,
-                    error='El precio debe ser mayor a 0'
-                )
-
-            if price > 99999999:
-                return render_template(
-                    'edit_product.html',
-                    product=product,
-                    error='El precio no puede ser mayor a 99.999.999'
-                )
-
-        except:
-            return render_template(
-                'edit_product.html',
-                product=product,
-                error='Precio inválido'
-            )
-
-        product.price = price
-
         image = request.files.get('image')
 
+        if not name or len(name) < 3 or len(name) > 80:
+            error = 'El nombre debe tener entre 3 y 80 caracteres'
+            return render_template('edit_product.html', product=product, error=error)
+
+        try:
+            price = int(price)
+
+            if price <= 0:
+                error = 'El precio debe ser mayor a 0'
+                return render_template('edit_product.html', product=product, error=error)
+
+            if price > 99999999:
+                error = 'El precio no puede ser mayor a 99.999.999'
+                return render_template('edit_product.html', product=product, error=error)
+
+        except:
+            error = 'Precio inválido'
+            return render_template('edit_product.html', product=product, error=error)
+
+        product.name = name
+        product.description = description
+        product.price = price
+
         if image and image.filename != '':
+
+            allowed_extensions = ('.png', '.jpg', '.jpeg', '.webp')
+
+            if not image.filename.lower().endswith(allowed_extensions):
+                error = 'Formato de imagen no permitido'
+                return render_template('edit_product.html', product=product, error=error)
 
             filename = secure_filename(image.filename)
 
